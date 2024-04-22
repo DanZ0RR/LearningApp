@@ -15,7 +15,8 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 import useSupabaseClient from '@/lib/supabase/client';
-
+import { useToast } from "@/components/ui/use-toast"
+ 
 interface ReclamoItemProps {
     tareaId: number;
 }
@@ -27,7 +28,7 @@ const ReclamoBtn = ({ tareaId }: ReclamoItemProps) => {
     const [userRole, setUserRole] = useState('');
     const [reclamoOpen, setReclamoOpen] = useState(false);
     const [reclamoClosed, setReclamoClosed] = useState(false);
-
+    const { toast } = useToast()
     // Cargar el rol del usuario y estado de reclamo al montar el componente
     useEffect(() => {
         const fetchData = async () => {
@@ -72,7 +73,7 @@ const ReclamoBtn = ({ tareaId }: ReclamoItemProps) => {
             if (error) {
                 console.error('Error enviando el reclamo:', error);
             } else {
-                alert('Reclamo enviado exitosamente.');
+
             }
         }
     };
@@ -87,7 +88,7 @@ const ReclamoBtn = ({ tareaId }: ReclamoItemProps) => {
             if (error) {
                 console.error('Error respondiendo al reclamo:', error);
             } else {
-                alert('Respuesta enviada exitosamente.');
+
             }
         }
     };
@@ -177,10 +178,54 @@ const ReclamoBtn = ({ tareaId }: ReclamoItemProps) => {
                         <SheetFooter>
                             <SheetClose>
                                 {userRole === 'Estudiante' && !reclamoOpen && !reclamoClosed && (
-                                    <Button onClick={enviarReclamo} className="mr-2">Enviar</Button>
+                                    <Button
+                                        onClick={async () => {
+                                        try {
+                                            // Llama a enviarReclamo y espera su finalización
+                                            await enviarReclamo();
+                                    
+                                            // Muestra un Toast en caso de éxito
+                                            toast({
+                                            title: "Reclamo enviado",
+                                            description: "Tu reclamo ha sido enviado correctamente. Recargue la página para ver los cambios.",
+                                            });
+                                        } catch (error) {
+                                            // Muestra un Toast en caso de error
+                                            toast({
+                                            title: "Error al enviar tu reclamo",
+                                            description: "No se pudo enviar tu reclamo. Por favor, intenta de nuevo mas tarde.",
+                                            });
+                                        }
+                                        }}
+                                        className="mr-2"
+                                        >Enviar
+                                    </Button>
                                 )}
                                 {userRole === 'Profesor' && reclamoOpen && !reclamoClosed &&  (
-                                    <Button onClick={responderReclamo} className="mr-2">Contestar</Button>
+                                    <Button
+                                        onClick={async () => {
+                                            try {
+                                            // Llama a responderReclamo y espera su finalización
+                                            await responderReclamo();
+
+                                            // Muestra un Toast en caso de éxito
+                                            toast({
+                                                title: "Respuesta enviada",
+                                                description: "Tu respuesta al reclamo ha sido enviada con éxito. Recargue la página para ver los cambios.",
+                                            });
+                                            } catch (error) {
+                                            // Muestra un Toast en caso de error
+                                            toast({
+                                                title: "Error al responder al reclamo",
+                                                description: "No se pudo enviar tu respuesta. Por favor, intenta de nuevo mas tarde.",
+                                            });
+                                            }
+                                        }}
+                                        className="mr-2"
+                                        >
+                                        Contestar
+                                    </Button>
+
                                 )}
                                 <Button className="mt-2" variant="destructive">Cerrar</Button>
                             </SheetClose>

@@ -27,6 +27,9 @@ import {
     DialogFooter,
     DialogClose,
 } from "@/components/ui/dialog"
+import { ToastAction } from "@/components/ui/toast"
+import { useToast } from "@/components/ui/use-toast"
+
 
 interface Tarea {
     id: number;
@@ -63,7 +66,7 @@ const CalificacionProfe: React.FC<CalificacionProfeProps> = ({ tareasData, regis
     const supabase = useSupabaseClient();
     const [estudiantes, setEstudiantes] = useState<{ [id: string]: string | null }>({});
     const [puntos, setPuntos] = useState<{ [id: number]: string | null }>({});
-
+    const { toast } = useToast()
     const handlePuntosChange = (registroTareaId: number, value: string) => {
         setPuntos({ ...puntos, [registroTareaId]: value });
     };
@@ -82,11 +85,9 @@ const CalificacionProfe: React.FC<CalificacionProfeProps> = ({ tareasData, regis
                 .eq('id', registroTareaId);
 
             if (error) throw error;
-            alert("Nota actualizada con éxito!");
             setPuntos({ ...puntos, [registroTareaId]: '' });
         } catch (error) {
             console.error('Error al actualizar la nota:', error);
-            alert("Error al actualizar la nota.");
         }
     };
 
@@ -198,7 +199,28 @@ const CalificacionProfe: React.FC<CalificacionProfeProps> = ({ tareasData, regis
                                                                 </div>
                                                                 <DialogFooter>
                                                                     <DialogClose>
-                                                                        <Button onClick={() => guardarCalificacion(registroTarea.id)}>Guardar</Button>
+                                                                    <Button
+                                                                        onClick={async () => {
+                                                                            try {
+                                                                            // Espera a que se complete el guardado
+                                                                            await guardarCalificacion(registroTarea.id);
+
+                                                                            // Si el guardado fue exitoso, muestra este Toast
+                                                                            toast({
+                                                                                title: "Asignación calificada con éxito",
+                                                                                description: "Recargue la página  para ver los cambios.",
+                                                                            });
+                                                                            } catch (error) {
+                                                                            // Si hay un error, muestra este Toast
+                                                                            toast({
+                                                                                title: "Error al guardar la calificación",
+                                                                                description: "No se pudo guardar la calificación. Intenta de nuevo mas tarde.",
+                                                                            });
+                                                                            }
+                                                                        }}
+                                                                        >
+                                                                        Guardar
+                                                                    </Button>
                                                                     </DialogClose>
                                                                     <DialogClose>
                                                                         <Button variant={'destructive'}>

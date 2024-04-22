@@ -151,9 +151,27 @@ const AddAsignment: React.FC<Props> = ({ cursoId }) => {
 
                     <DialogFooter>
                         <DialogClose>
-                            <Button className="bg-green-700"
-                                onClick={agregarAsignacion}
-                            >
+                            <Button
+                                className="bg-green-700"
+                                onClick={async () => {
+                                    try {
+                                    // Ejecuta agregarAsignacion y espera a que termine si es necesario
+                                    await agregarAsignacion();
+
+                                    // Muestra un Toast de éxito
+                                    toast({
+                                        title: "Asignación Creada",
+                                        description: "La asignación ha sido creada con éxito. Recargue la página para ver los cambios.",
+                                    });
+                                    } catch (error) {
+                                    // Muestra un Toast de error si algo va mal
+                                    toast({
+                                        title: "Error al crear la asignación",
+                                        description: "No se pudo crear la asignación. Por favor, intenta de nuevo mas tarde.",
+                                    });
+                                    }
+                                }}
+                                >
                                 Crear Asignación
                             </Button>
                         </DialogClose>
