@@ -47,10 +47,6 @@ interface RegistroTarea {
     puntos_obtenidos: number | null;
 }
 
-interface Usuario {
-    id: string;
-    nombre_completo: string;
-}
 
 interface CalificacionProfeProps {
     tareasData: Tarea[];
